@@ -126,11 +126,15 @@ class MainActivity : AppCompatActivity() {
             val row = RowTargetBinding.inflate(layoutInflater, binding.listTargets, false)
             row.tvName.text = target.name
             row.tvUrl.text = target.url
+            val senders = if (target.senders.isBlank()) getString(R.string.all_senders) else target.senders
             row.tvSenders.text =
-                if (target.senders.isBlank()) getString(R.string.all_senders) else target.senders
+                if (target.keywords.isBlank()) senders else senders + " · " + target.keywords
             row.swEnabled.isChecked = target.enabled
             row.swEnabled.setOnCheckedChangeListener { _, checked ->
-                Db.saveTarget(target.id, target.name, target.url, target.token, target.senders, checked)
+                Db.saveTarget(
+                    target.id, target.name, target.url, target.token,
+                    target.senders, target.keywords, checked,
+                )
             }
             row.root.setOnClickListener { editTarget(target) }
             row.root.setOnLongClickListener {
@@ -176,6 +180,7 @@ class MainActivity : AppCompatActivity() {
         view.etUrl.setText(target?.url ?: "")
         view.etToken.setText(target?.token ?: "")
         view.etSenders.setText(target?.senders ?: "")
+        view.etKeywords.setText(target?.keywords ?: "")
 
         AlertDialog.Builder(this)
             .setTitle(if (target == null) R.string.add_target else R.string.edit_target)
@@ -187,6 +192,7 @@ class MainActivity : AppCompatActivity() {
                     url = view.etUrl.text.toString().trim(),
                     token = view.etToken.text.toString().trim(),
                     senders = view.etSenders.text.toString().trim(),
+                    keywords = view.etKeywords.text.toString().trim(),
                     enabled = target?.enabled ?: true,
                 )
                 render()
@@ -216,7 +222,7 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        val target = Target(0, "test", url, token, "", true)
+        val target = Target(0, "test", url, token, "", "", true)
         Thread {
             val payload = JSONObject().apply {
                 put("type", "test")
@@ -262,6 +268,7 @@ class MainActivity : AppCompatActivity() {
                 url = item.optString("url"),
                 token = item.optString("token"),
                 senders = item.optString("senders"),
+                keywords = item.optString("keywords"),
                 enabled = item.optBoolean("enabled", true),
             )
         }

@@ -13,6 +13,7 @@ data class Target(
     val url: String,
     val token: String,
     val senders: String,
+    val keywords: String,
     val enabled: Boolean,
 )
 
@@ -66,7 +67,7 @@ object Db {
     fun targets(onlyEnabled: Boolean = false): List<Target> {
         val filter = if (onlyEnabled) "WHERE enabled = 1" else ""
         val rows = ArrayList<Target>()
-        db().rawQuery("SELECT id, name, url, token, senders, enabled FROM targets $filter ORDER BY id", null)
+        db().rawQuery("SELECT id, name, url, token, senders, keywords, enabled FROM targets $filter ORDER BY id", null)
             .use { cursor ->
                 while (cursor.moveToNext()) rows.add(target(cursor, 0))
             }
@@ -79,7 +80,8 @@ object Db {
         url = cursor.getString(offset + 2),
         token = cursor.getString(offset + 3),
         senders = cursor.getString(offset + 4),
-        enabled = cursor.getInt(offset + 5) == 1,
+        keywords = cursor.getString(offset + 5),
+        enabled = cursor.getInt(offset + 6) == 1,
     )
 
     fun saveTarget(
@@ -88,6 +90,7 @@ object Db {
         url: String,
         token: String,
         senders: String,
+        keywords: String,
         enabled: Boolean,
     ) {
         val values = ContentValues().apply {
@@ -95,6 +98,7 @@ object Db {
             put("url", url)
             put("token", token)
             put("senders", senders)
+            put("keywords", keywords)
             put("enabled", if (enabled) 1 else 0)
         }
         if (id > 0) {
@@ -123,15 +127,15 @@ object Db {
         }
         val id = db().insertWithOnConflict("messages", null, values, SQLiteDatabase.CONFLICT_IGNORE)
         if (id == -1L) return false
-        queue(id, sender)
+        queue(id, sender, body)
         return true
     }
 
-    /** Xep tin vao hang doi cua moi dich dang bat va khop bo loc nguoi gui. */
-    private fun queue(smsId: Long, sender: String) {
+    /** Xep tin vao hang doi cua moi dich dang bat va qua duoc bo loc cua dich do. */
+    private fun queue(smsId: Long, sender: String, body: String) {
         val now = System.currentTimeMillis()
         for (item in targets(onlyEnabled = true)) {
-            if (!accepts(item, sender)) continue
+            if (!accepts(item, sender, body)) continue
             val values = ContentValues().apply {
                 put("message_id", smsId)
                 put("target_id", item.id)
@@ -144,12 +148,21 @@ object Db {
         }
     }
 
-    /** Bo loc rong nghia la nhan tat. */
-    fun accepts(target: Target, sender: String): Boolean {
-        val wanted = target.senders.split(",").map { it.trim().lowercase() }.filter { it.isNotEmpty() }
+    /**
+     * Hai lop loc, lop nao rong thi bo qua lop do:
+     *  - nguoi gui phai chua mot trong cac ten da khai
+     *  - noi dung phai chua mot trong cac tu khoa da khai (vi du "GD:,SD:" de chi
+     *    lay tin bien dong so du, bo OTP va quang cao cung dau so)
+     */
+    fun accepts(target: Target, sender: String, body: String): Boolean {
+        return matches(target.senders, sender) && matches(target.keywords, body)
+    }
+
+    private fun matches(filter: String, text: String): Boolean {
+        val wanted = filter.split(",").map { it.trim().lowercase() }.filter { it.isNotEmpty() }
         if (wanted.isEmpty()) return true
-        val from = sender.lowercase()
-        return wanted.any { from.contains(it) }
+        val haystack = text.lowercase()
+        return wanted.any { haystack.contains(it) }
     }
 
     /**
@@ -166,7 +179,7 @@ object Db {
     fun pending(limit: Int): List<Delivery> {
         val sql = """
             SELECT d.id, d.attempts,
-                   t.id, t.name, t.url, t.token, t.senders, t.enabled,
+                   t.id, t.name, t.url, t.token, t.senders, t.keywords, t.enabled,
                    m.id, m.msg_id, m.sender, m.body, m.received_at, m.sim, m.source
             FROM deliveries d
             JOIN targets t ON t.id = d.target_id
@@ -184,13 +197,13 @@ object Db {
                         attempts = cursor.getInt(1),
                         target = target(cursor, 2),
                         sms = Sms(
-                            id = cursor.getLong(8),
-                            msgId = cursor.getString(9),
-                            sender = cursor.getString(10),
-                            body = cursor.getString(11),
-                            receivedAt = cursor.getLong(12),
-                            sim = cursor.getString(13),
-                            source = cursor.getString(14),
+                            id = cursor.getLong(9),
+                            msgId = cursor.getString(10),
+                            sender = cursor.getString(11),
+                            body = cursor.getString(12),
+                            receivedAt = cursor.getLong(13),
+                            sim = cursor.getString(14),
+                            source = cursor.getString(15),
                         ),
                     )
                 )
@@ -219,7 +232,8 @@ object Db {
             arrayOf<Any>(PENDING, System.currentTimeMillis(), smsId, FAILED),
         )
         val sender = one("SELECT sender FROM messages WHERE id = ?", arrayOf(smsId.toString())) ?: return
-        queue(smsId, sender)
+        val body = one("SELECT body FROM messages WHERE id = ?", arrayOf(smsId.toString())) ?: ""
+        queue(smsId, sender, body)
     }
 
     // ----- so lieu cho man hinh -----
@@ -288,7 +302,7 @@ object Db {
         }
     }
 
-    private class Helper(context: Context) : SQLiteOpenHelper(context, "relay.db", null, 1) {
+    private class Helper(context: Context) : SQLiteOpenHelper(context, "relay.db", null, 2) {
 
         override fun onCreate(db: SQLiteDatabase) {
             db.execSQL(
@@ -298,6 +312,7 @@ object Db {
                     "url TEXT NOT NULL, " +
                     "token TEXT NOT NULL DEFAULT '', " +
                     "senders TEXT NOT NULL DEFAULT '', " +
+                    "keywords TEXT NOT NULL DEFAULT '', " +
                     "enabled INTEGER NOT NULL DEFAULT 1)"
             )
             db.execSQL(
@@ -330,6 +345,11 @@ object Db {
             )
         }
 
-        override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) = Unit
+        // Ban da cai tren may thi chi them cot, khong dung vao du lieu cu.
+        override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+            if (oldVersion < 2) {
+                db.execSQL("ALTER TABLE targets ADD COLUMN keywords TEXT NOT NULL DEFAULT ''")
+            }
+        }
     }
 }

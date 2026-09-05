@@ -20,8 +20,18 @@ lúc tin tới và bản quét lại từ hộp tin không thành hai tin.
 
 ## Cấu hình
 
-Mỗi đích gồm: tên, URL nhận tin, token, và bộ lọc người gửi (ngăn bằng dấu phẩy,
-để trống là nhận tất). Thêm tay trong app, hoặc bấm **Nhập JSON** rồi dán:
+Mỗi đích gồm: tên, URL nhận tin, token, và hai bộ lọc — ngăn bằng dấu phẩy, để
+trống là bỏ qua lớp đó:
+
+- **Người gửi** phải chứa một trong các tên đã khai (`MB Bank,Vietcombank`).
+- **Nội dung** phải chứa một trong các từ khoá đã khai. Đặt đúng prefix mã phiếu
+  của project (`MATHOLYM`) thì chỉ tin chuyển khoản cho project đó mới đi lên;
+  OTP, quảng cáo, và tiền của việc khác ở lại máy. Muốn mọi tin biến động số dư
+  đều lên để server tự phân loại thì đặt `GD:,SD:`.
+
+Tin không qua được bộ lọc vẫn nằm trong máy, chỉ không gửi đi.
+
+Thêm tay trong app, hoặc bấm **Nhập JSON** rồi dán:
 
 ```json
 [
@@ -30,6 +40,7 @@ Mỗi đích gồm: tên, URL nhận tin, token, và bộ lọc người gửi (
     "url": "https://api.example.com/internal/sms/incoming",
     "token": "chuoi-bi-mat",
     "senders": "MB Bank,Vietcombank",
+    "keywords": "MATHOLYM",
     "enabled": true
   }
 ]

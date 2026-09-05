@@ -45,5 +45,6 @@
     <string name="hint_url">URL nhận tin</string>
     <string name="hint_token">Token</string>
     <string name="hint_senders">Lọc người gửi, cách nhau bằng dấu phẩy</string>
+    <string name="hint_keywords">Lọc nội dung, tin phải chứa một trong các từ này</string>
     <string name="hint_json">Dán JSON cấu hình vào đây</string>
 </resources>
