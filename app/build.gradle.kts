@@ -8,11 +8,14 @@ android {
     compileSdk = 34
 
     defaultConfig {
+        // Moi lan Actions chay lai tang mot so, de cai de len ban cu khong vuong.
+        val build = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toIntOrNull() ?: 1
+
         applicationId = "com.guxplus.smsnotifications"
         minSdk = 24
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = build
+        versionName = "1.$build"
     }
 
     buildTypes {

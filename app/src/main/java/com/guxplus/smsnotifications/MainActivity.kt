@@ -3,6 +3,8 @@ package com.guxplus.smsnotifications
 import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
@@ -27,6 +29,20 @@ class MainActivity : AppCompatActivity() {
 
     private val needed = arrayOf(Manifest.permission.RECEIVE_SMS, Manifest.permission.READ_SMS)
     private val clock = SimpleDateFormat("dd/MM HH:mm", Locale("vi", "VN"))
+
+    /**
+     * Tin toi tay receiver chu khong tay man hinh, nen man hinh phai tu ngo lai.
+     * Chi ve lai khi so lieu doi that, de khong giat danh sach dang cuon.
+     */
+    private val handler = Handler(Looper.getMainLooper())
+    private var snapshot = ""
+
+    private val ticker = object : Runnable {
+        override fun run() {
+            if (state() != snapshot) render()
+            handler.postDelayed(this, REFRESH_MS)
+        }
+    }
 
     private val permissions = registerForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions(),
@@ -57,6 +73,12 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         render()
+        handler.postDelayed(ticker, REFRESH_MS)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(ticker)
     }
 
     // ----- quyen -----
@@ -72,7 +94,13 @@ class MainActivity : AppCompatActivity() {
 
     // ----- ve man hinh -----
 
+    /** Dau van tay cua du lieu, doi thi moi ve lai man hinh. */
+    private fun state(): String =
+        Db.lastReceivedAt().toString() + "/" + Db.lastSentAt() + "/" + Db.countPending()
+
     private fun render() {
+        snapshot = state()
+
         val granted = if (missing().isEmpty()) getString(R.string.granted) else getString(R.string.not_granted)
         binding.tvStatus.text = listOf(
             getString(R.string.status_permission, granted),
@@ -264,4 +292,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun toast(text: String) = Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+
+    companion object {
+        private const val REFRESH_MS = 2000L
+    }
 }
