@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SMS Notifications</string>
+
+    <string name="status_permission">Quyền đọc tin nhắn: %1$s</string>
+    <string name="granted">đã cấp</string>
+    <string name="not_granted">CHƯA cấp</string>
+    <string name="status_pending">Đang chờ gửi: %1$d</string>
+    <string name="status_last_received">Nhận gần nhất: %1$s</string>
+    <string name="status_last_sent">Gửi được gần nhất: %1$s</string>
+
+    <string name="permission">Cấp quyền</string>
+    <string name="scan">Quét hộp tin</string>
+    <string name="flush">Gửi lại</string>
+
+    <string name="targets">Đích đến</string>
+    <string name="add_target">Thêm đích</string>
+    <string name="edit_target">Sửa đích</string>
+    <string name="import_json">Nhập JSON</string>
+    <string name="recent">Tin gần đây</string>
+
+    <string name="no_target">Chưa có đích nào. Bấm Thêm đích để cấu hình.</string>
+    <string name="no_message">Chưa nhận tin nào.</string>
+    <string name="all_senders">Nhận mọi người gửi</string>
+    <string name="hold_to_delete">Nhấn giữ một đích để xoá</string>
+
+    <string name="message_head">%1$s · %2$s · %3$s</string>
+    <string name="badge">gửi %1$d · chờ %2$d · lỗi %3$d</string>
+
+    <string name="save">Lưu</string>
+    <string name="cancel">Bỏ qua</string>
+    <string name="test">Gửi thử</string>
+    <string name="delete">Xoá</string>
+    <string name="delete_target">Xoá đích %1$s?</string>
+    <string name="resend">Gửi lại tin này</string>
+    <string name="close">Đóng</string>
+
+    <string name="need_url">Chưa nhập URL</string>
+    <string name="queued_scan">Đang quét hộp tin và gửi lại</string>
+    <string name="queued_flush">Đang gửi lại hàng đợi</string>
+    <string name="bad_json">JSON không đọc được</string>
+    <string name="imported">Đã nhập %1$d đích</string>
+
+    <string name="hint_name">Tên project</string>
+    <string name="hint_url">URL nhận tin</string>
+    <string name="hint_token">Token</string>
+    <string name="hint_senders">Lọc người gửi, cách nhau bằng dấu phẩy</string>
+    <string name="hint_json">Dán JSON cấu hình vào đây</string>
+</resources>

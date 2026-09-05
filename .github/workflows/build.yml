@@ -1,0 +1,47 @@
+name: Build APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      # Khong giu gradle wrapper trong repo, de action tu cai dung ban Gradle.
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.9'
+
+      - name: Build debug APK
+        run: gradle assembleDebug --no-daemon --stacktrace
+
+      - name: Doi ten cho de tai
+        run: cp app/build/outputs/apk/debug/app-debug.apk sms-notifications.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sms-notifications-apk
+          path: sms-notifications.apk
+
+      # Dua len Releases de mo bang trinh duyet tren dien thoai la cai duoc ngay.
+      - name: Dang len release latest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete latest --cleanup-tag --yes || true
+          gh release create latest sms-notifications.apk \
+            --title "APK moi nhat" \
+            --notes "Build tu ${{ github.sha }}"
