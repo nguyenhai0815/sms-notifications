@@ -1,7 +1,7 @@
 # SMS Notifications
 
 App Android đọc tin nhắn đến trên máy rồi chuyển nguyên văn về server. Dùng chung
-cho nhiều project — mỗi project là một **đích đến** trong app.
+cho nhiều project — mỗi project là một mục riêng trong app.
 
 App **không phân tích gì cả**: không biết ngân hàng, không biết hoá đơn. Việc tách
 số tiền, dò mã, khớp đơn là của server từng project.
@@ -20,7 +20,12 @@ lúc tin tới và bản quét lại từ hộp tin không thành hai tin.
 
 ## Cấu hình
 
-Mỗi đích gồm: tên, URL nhận tin, token, và hai bộ lọc — ngăn bằng dấu phẩy, để
+Màn chính là trạng thái máy và danh sách project. Bấm một project để xem cấu hình
+và tin đã đi lên project đó; bấm **+** để thêm project mới theo ba bước: kết nối,
+bộ lọc, kiểm tra (app tự gửi thử và hiện kết quả trước khi lưu). Mục **Tất cả tin**
+cuối màn chính xem mọi tin máy nhận, kể cả tin không khớp project nào.
+
+Mỗi project gồm: tên, URL nhận tin, token, và hai bộ lọc — ngăn bằng dấu phẩy, để
 trống là bỏ qua lớp đó:
 
 - **Người gửi** phải chứa một trong các tên đã khai (`MB Bank,Vietcombank`).
@@ -31,7 +36,7 @@ trống là bỏ qua lớp đó:
 
 Tin không qua được bộ lọc vẫn nằm trong máy, chỉ không gửi đi.
 
-Thêm tay trong app, hoặc bấm **Nhập JSON** rồi dán:
+Nhiều project cùng lúc thì bấm icon `{}` ở đầu trang rồi dán JSON:
 
 ```json
 [
@@ -76,7 +81,7 @@ Báo còn sống, 15 phút một lần:
 }
 ```
 
-Nút **Gửi thử** trong màn sửa đích bắn `{"type":"test", ...}`.
+Nút **Gửi thử** (trong màn project và bước kiểm tra khi thêm) bắn `{"type":"test", ...}`.
 
 Quy ước trả lời:
 

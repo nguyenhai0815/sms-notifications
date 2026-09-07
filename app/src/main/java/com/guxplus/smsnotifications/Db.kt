@@ -34,6 +34,20 @@ data class Delivery(
     val sms: Sms,
 )
 
+data class TargetStats(
+    val sent: Int,
+    val pending: Int,
+    val failed: Int,
+)
+
+data class TargetMessage(
+    val sms: Sms,
+    val status: String,
+    val attempts: Int,
+    val lastError: String,
+    val updatedAt: Long,
+)
+
 data class SmsRow(
     val sms: Sms,
     val pending: Int,
@@ -72,6 +86,15 @@ object Db {
                 while (cursor.moveToNext()) rows.add(target(cursor, 0))
             }
         return rows
+    }
+
+    fun target(id: Long): Target? {
+        db().rawQuery(
+            "SELECT id, name, url, token, senders, keywords, enabled FROM targets WHERE id = ?",
+            arrayOf(id.toString()),
+        ).use { cursor ->
+            return if (cursor.moveToFirst()) target(cursor, 0) else null
+        }
     }
 
     private fun target(cursor: Cursor, offset: Int) = Target(
@@ -236,7 +259,73 @@ object Db {
         queue(smsId, sender, body)
     }
 
+    // ----- so lieu theo project -----
+
+    fun stats(targetId: Long): TargetStats {
+        val sql = """
+            SELECT
+              SUM(CASE WHEN status = 'SENT' THEN 1 ELSE 0 END),
+              SUM(CASE WHEN status = 'PENDING' THEN 1 ELSE 0 END),
+              SUM(CASE WHEN status = 'FAILED' THEN 1 ELSE 0 END)
+            FROM deliveries WHERE target_id = ?
+        """.trimIndent()
+        db().rawQuery(sql, arrayOf(targetId.toString())).use { cursor ->
+            if (!cursor.moveToFirst()) return TargetStats(0, 0, 0)
+            return TargetStats(cursor.getInt(0), cursor.getInt(1), cursor.getInt(2))
+        }
+    }
+
+    /** Tin moi nhat da xep vao hang doi cua project, de hien mot dong tom tat. */
+    fun lastSms(targetId: Long): Sms? = messagesFor(targetId, 1).firstOrNull()?.sms
+
+    fun messagesFor(targetId: Long, limit: Int): List<TargetMessage> {
+        val sql = """
+            SELECT m.id, m.msg_id, m.sender, m.body, m.received_at, m.sim, m.source,
+                   d.status, d.attempts, d.last_error, d.updated_at
+            FROM deliveries d
+            JOIN messages m ON m.id = d.message_id
+            WHERE d.target_id = ?
+            ORDER BY m.received_at DESC
+            LIMIT ?
+        """.trimIndent()
+        val rows = ArrayList<TargetMessage>()
+        db().rawQuery(sql, arrayOf(targetId.toString(), limit.toString())).use { cursor ->
+            while (cursor.moveToNext()) {
+                rows.add(
+                    TargetMessage(
+                        sms = Sms(
+                            id = cursor.getLong(0),
+                            msgId = cursor.getString(1),
+                            sender = cursor.getString(2),
+                            body = cursor.getString(3),
+                            receivedAt = cursor.getLong(4),
+                            sim = cursor.getString(5),
+                            source = cursor.getString(6),
+                        ),
+                        status = cursor.getString(7),
+                        attempts = cursor.getInt(8),
+                        lastError = cursor.getString(9),
+                        updatedAt = cursor.getLong(10),
+                    )
+                )
+            }
+        }
+        return rows
+    }
+
+    /** Cho moi tin bi server che cua project nay ve lai hang doi. */
+    fun requeueFailed(targetId: Long) {
+        db().execSQL(
+            "UPDATE deliveries SET status = ?, last_error = '', updated_at = ? WHERE target_id = ? AND status = ?",
+            arrayOf<Any>(PENDING, System.currentTimeMillis(), targetId, FAILED),
+        )
+    }
+
     // ----- so lieu cho man hinh -----
+
+    fun countMessages(): Int =
+        one("SELECT COUNT(*) FROM messages", arrayOf())?.toIntOrNull() ?: 0
+
 
     fun countPending(): Int =
         one("SELECT COUNT(*) FROM deliveries WHERE status = ?", arrayOf(PENDING))?.toIntOrNull() ?: 0

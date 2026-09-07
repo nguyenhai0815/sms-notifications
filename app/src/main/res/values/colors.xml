@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="header">#22304A</color>
+    <color name="header_soft">#1FFFFFFF</color>
+    <color name="header_muted">#B8C0D0</color>
+    <color name="header_ink">#FFFFFF</color>
+
+    <color name="primary">#0F6E56</color>
+    <color name="primary_soft">#DCF3EA</color>
+    <color name="ok">#1A8F5A</color>
+    <color name="ok_soft">#DFF5E8</color>
+    <color name="warn">#B45309</color>
+    <color name="warn_soft">#FEF3C7</color>
+    <color name="err">#C2410C</color>
+    <color name="err_soft">#FFE4D6</color>
+
+    <color name="screen">#F6F7FB</color>
+    <color name="card">#FFFFFF</color>
+    <color name="line">#E3E7EF</color>
+    <color name="ink">#1B1F27</color>
+    <color name="muted">#6B7280</color>
+    <color name="switch_off">#C8CCD6</color>
+
+    <!-- mau chu cai dau cua project, xoay vong -->
+    <color name="blue">#1D4ED8</color>
+    <color name="blue_soft">#DBEAFE</color>
+    <color name="purple">#6D28D9</color>
+    <color name="purple_soft">#EDE9FE</color>
+</resources>

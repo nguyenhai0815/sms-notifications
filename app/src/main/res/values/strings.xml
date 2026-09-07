@@ -2,49 +2,97 @@
 <resources>
     <string name="app_name">SMS Notifications</string>
 
-    <string name="status_permission">Quyền đọc tin nhắn: %1$s</string>
-    <string name="granted">đã cấp</string>
-    <string name="not_granted">CHƯA cấp</string>
-    <string name="status_pending">Đang chờ gửi: %1$d</string>
-    <string name="status_last_received">Nhận gần nhất: %1$s</string>
-    <string name="status_last_sent">Gửi được gần nhất: %1$s</string>
+    <!-- trang thai may -->
+    <string name="state_running">Đang nhận tin</string>
+    <string name="state_no_permission">Chưa cấp quyền đọc tin</string>
+    <string name="state_sub">Quyền đã cấp · %1$s</string>
+    <string name="state_sub_no_permission">Bấm để cấp quyền · %1$s</string>
+    <string name="stat_pending">Chờ gửi</string>
+    <string name="stat_last_received">Nhận gần nhất</string>
+    <string name="stat_last_sent">Gửi gần nhất</string>
+    <string name="stat_sent">Đã gửi</string>
+    <string name="stat_failed">Lỗi</string>
 
     <string name="permission">Cấp quyền</string>
     <string name="scan">Quét hộp tin</string>
     <string name="flush">Gửi lại</string>
+    <string name="flush_failed">Gửi lại lỗi</string>
 
-    <string name="targets">Đích đến</string>
-    <string name="add_target">Thêm đích</string>
-    <string name="edit_target">Sửa đích</string>
+    <!-- project -->
+    <string name="projects">Project</string>
+    <string name="add_project">Thêm project</string>
+    <string name="edit_project">Sửa project</string>
     <string name="import_json">Nhập JSON</string>
-    <string name="recent">Tin gần đây</string>
+    <string name="no_project">Chưa có project nào. Bấm nút + để thêm.</string>
+    <string name="project_off">Đang tắt</string>
+    <string name="project_on">Đang bật</string>
+    <string name="badge_sent">%1$d gửi</string>
+    <string name="badge_pending">%1$d chờ</string>
+    <string name="badge_failed">%1$d lỗi</string>
+    <string name="no_message_yet">Chưa có tin nào lên project này</string>
+    <string name="all_senders">Mọi người gửi</string>
+    <string name="all_keywords">Mọi nội dung</string>
+    <string name="field_url">URL</string>
+    <string name="field_token">Token</string>
+    <string name="field_senders">Người gửi</string>
+    <string name="field_keywords">Từ khoá</string>
+    <string name="field_name">Tên</string>
+    <string name="target_messages">Tin đã lên project</string>
 
-    <string name="no_target">Chưa có đích nào. Bấm Thêm đích để cấu hình.</string>
+    <!-- tat ca tin -->
+    <string name="all_messages">Tất cả tin</string>
+    <string name="all_messages_sub">%1$d tin máy nhận</string>
     <string name="no_message">Chưa nhận tin nào.</string>
-    <string name="all_senders">Nhận mọi người gửi</string>
-    <string name="hold_to_delete">Nhấn giữ một đích để xoá</string>
-
-    <string name="message_head">%1$s · %2$s · %3$s</string>
     <string name="badge">gửi %1$d · chờ %2$d · lỗi %3$d</string>
+    <string name="not_matched">Không khớp project nào</string>
 
-    <string name="save">Lưu</string>
-    <string name="cancel">Bỏ qua</string>
-    <string name="test">Gửi thử</string>
-    <string name="delete">Xoá</string>
-    <string name="delete_target">Xoá đích %1$s?</string>
-    <string name="resend">Gửi lại tin này</string>
-    <string name="close">Đóng</string>
+    <!-- trang thai mot tin -->
+    <string name="delivery_sent">Đã gửi</string>
+    <string name="delivery_pending">Chờ gửi</string>
+    <string name="delivery_pending_retry">Chờ gửi · lần %1$d · %2$s</string>
+    <string name="delivery_failed">Lỗi · %1$s</string>
 
-    <string name="need_url">Chưa nhập URL</string>
-    <string name="queued_scan">Đang quét hộp tin và gửi lại</string>
-    <string name="queued_flush">Đang gửi lại hàng đợi</string>
-    <string name="bad_json">JSON không đọc được</string>
-    <string name="imported">Đã nhập %1$d đích</string>
-
+    <!-- them / sua project -->
+    <string name="step_connect">Kết nối</string>
+    <string name="step_filter">Bộ lọc</string>
+    <string name="step_check">Kiểm tra</string>
+    <string name="step_connect_title">Server nhận tin</string>
+    <string name="step_connect_desc">App gửi POST JSON tới URL này, kèm header Authorization: Bearer token.</string>
+    <string name="step_filter_title">Tin nào được đi lên</string>
+    <string name="step_filter_desc">Ngăn bằng dấu phẩy, để trống là bỏ qua lớp đó. Tin không qua lọc vẫn nằm trong máy.</string>
+    <string name="step_check_title">Kiểm tra trước khi lưu</string>
+    <string name="step_check_desc">App bắn một gói thử tới URL với token đã nhập. Server trả 2xx là thông.</string>
     <string name="hint_name">Tên project</string>
     <string name="hint_url">URL nhận tin</string>
     <string name="hint_token">Token</string>
-    <string name="hint_senders">Lọc người gửi, cách nhau bằng dấu phẩy</string>
-    <string name="hint_keywords">Lọc nội dung, tin phải chứa một trong các từ này</string>
+    <string name="hint_senders">Người gửi</string>
+    <string name="hint_keywords">Nội dung phải chứa</string>
+    <string name="help_senders">Ví dụ: MB Bank, Vietcombank. Để trống nhận mọi người gửi.</string>
+    <string name="help_keywords">Đặt đúng prefix mã đơn của project để OTP, quảng cáo không đi lên. Muốn mọi tin biến động số dư thì đặt GD:, SD:</string>
+    <string name="paste">Dán</string>
+    <string name="back">Quay lại</string>
+    <string name="next">Tiếp tục</string>
+    <string name="test">Gửi thử</string>
+    <string name="test_again">Gửi thử lại</string>
+    <string name="testing">Đang gửi thử…</string>
+    <string name="test_ok">Server đã nhận</string>
+    <string name="test_fail">Server không nhận</string>
+    <string name="test_detail">HTTP %1$d · %2$s · %3$d ms</string>
+    <string name="test_error">%1$s · %2$d ms</string>
+    <string name="save">Lưu</string>
+    <string name="cancel">Bỏ qua</string>
+    <string name="delete">Xoá</string>
+    <string name="delete_target">Xoá project %1$s? Tin đã nhận vẫn giữ trong máy.</string>
+    <string name="resend">Gửi lại tin này</string>
+    <string name="close">Đóng</string>
+
+    <string name="need_name">Chưa nhập tên</string>
+    <string name="need_url">Chưa nhập URL</string>
+    <string name="queued_scan">Đang quét hộp tin và gửi lại</string>
+    <string name="queued_flush">Đang gửi lại hàng đợi</string>
+    <string name="queued_flush_failed">Đã đưa tin lỗi về hàng đợi</string>
+    <string name="bad_json">JSON không đọc được</string>
+    <string name="imported">Đã nhập %1$d project</string>
     <string name="hint_json">Dán JSON cấu hình vào đây</string>
+    <string name="saved">Đã lưu</string>
 </resources>

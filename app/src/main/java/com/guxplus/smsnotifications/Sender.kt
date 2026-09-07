@@ -9,7 +9,11 @@ import java.io.OutputStreamWriter
 import java.net.HttpURLConnection
 import java.net.URL
 
-data class HttpResult(val code: Int, val body: String, val error: String)
+data class HttpResult(val code: Int, val body: String, val error: String) {
+    val ok: Boolean get() = code in 200..299
+}
+
+data class TestResult(val http: HttpResult, val ms: Long)
 
 object Sender {
 
@@ -64,6 +68,19 @@ object Sender {
             put("pending", Db.countPending())
         }
         for (target in Db.targets(onlyEnabled = true)) post(target, payload.toString())
+    }
+
+    /** Ban mot goi rong toi URL de biet URL va token co thong hay khong. */
+    fun test(url: String, token: String): TestResult {
+        val target = Target(0, "test", url, token, "", "", true)
+        val payload = JSONObject().apply {
+            put("type", "test")
+            put("device", device())
+            put("sent_at", System.currentTimeMillis())
+        }
+        val started = System.currentTimeMillis()
+        val result = post(target, payload.toString())
+        return TestResult(result, System.currentTimeMillis() - started)
     }
 
     fun post(target: Target, json: String): HttpResult {

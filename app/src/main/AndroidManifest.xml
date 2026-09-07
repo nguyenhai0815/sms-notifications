@@ -25,6 +25,22 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".TargetActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".AllMessagesActivity"
+            android:exported="false"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".TargetEditActivity"
+            android:exported="false"
+            android:theme="@style/Theme.SmsNotifications.Plain"
+            android:windowSoftInputMode="adjustResize" />
+
         <receiver
             android:name=".SmsReceiver"
             android:exported="true"

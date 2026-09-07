@@ -1,17 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <EditText
-        android:id="@+id/etJson"
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Relay.Field"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="top"
-        android:hint="@string/hint_json"
-        android:importantForAutofill="no"
-        android:inputType="textMultiLine"
-        android:minLines="6"
-        android:padding="16dp"
-        android:textSize="12sp" />
+        android:layout_margin="16dp"
+        android:hint="@string/hint_json">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etJson"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:gravity="top"
+            android:importantForAutofill="no"
+            android:inputType="textMultiLine"
+            android:minLines="6"
+            android:textSize="12sp" />
+    </com.google.android.material.textfield.TextInputLayout>
 </ScrollView>
